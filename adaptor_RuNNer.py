@@ -30,6 +30,20 @@ class Sample:
     def number_of_atoms(self):
         return len(self.atomic)
 
+    @property
+    def total_energy(self):
+        tot = 0.0
+        for atom in self.atomic:
+            tot += atom.energy
+        return tot
+
+    @property
+    def total_charge(self):
+        tot = 0.0
+        for atom in self.atomic:
+            tot += atom.charge
+        return tot
+
 
 class DataSet:
     """This class holds a collection of samples."""
@@ -69,7 +83,7 @@ class RunnerAdaptor:
                 for atom in sample.atomic:
                     out_file.write("atom ")
                     out_file.write("%f %f %f " % atom.position)
-                    out_file.write("%s %f %f " % (atom.symbol, atom.charge, atom.energy))
+                    out_file.write("%s %f %f " % (atom.symbol, atom.charge, atom.energy*0.0))
                     out_file.write("%f %f %f\n" % atom.force)
                 out_file.write("energy %f\n" % sample.collective.total_energy)
                 out_file.write("charge %f\n" % sample.collective.total_charge)
@@ -106,8 +120,6 @@ class RuNNerAdaptorLAMMPS(RunnerAdaptor):
                     line = next(in_file)
                     line = line.rstrip("/n").split()
                     box.append(float(line[1]) - float(line[0]))
-                # set collective data
-                sample.collective = CollectiveData(tuple(box))
 
                 # read atomic positions, symbol, charge, forces, energy, etc.
                 line = next(in_file)
@@ -121,11 +133,16 @@ class RuNNerAdaptorLAMMPS(RunnerAdaptor):
                     # convert number to an atomic symbol
                     if symbol_dict is not None:
                         symbol = symbol_dict[symbol]
+
                     # create atomic data and append it to sample
                     sample.atomic.append(AtomicData(position, symbol, charge, energy, force))
 
+                # set collective data
+                sample.collective = CollectiveData(tuple(box), sample.total_energy, sample.total_charge)
+
                 # add sample to DataSet (list of samples)
                 self.dataset.append(sample)
+
         return self
 
 

@@ -60,7 +60,8 @@ unfix			rlx
 
 # ---
 
-dump            dataset all custom 100 dataset/dump.airebo.data x y z type q q fx fy fz 
+compute         e0 all pe/atom
+dump            dataset all custom 100 dataset/dump.airebo.data x y z type q c_e0 fx fy fz 
 dump_modify     dataset sort id append yes
 reset_timestep  0
 
