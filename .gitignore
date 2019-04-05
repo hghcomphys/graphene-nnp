@@ -1,0 +1,4 @@
+*.xyz
+*.data
+log.lammps
+graphene_gen.f90
