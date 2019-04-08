@@ -49,8 +49,8 @@ unfix		1
 
 ############################## 
 
-variable T      equal 300 
-velocity   		mov create 1 21234 dist gaussian mom yes rot yes
+variable T      equal 600 
+velocity   		mov create 1 98445 dist gaussian mom yes rot yes
 
 # ---
 
@@ -61,14 +61,18 @@ unfix			rlx
 # ---
 
 compute         e0 all pe/atom
-dump            dataset all custom 100 dataset/dump.airebo.data x y z type q c_e0 fx fy fz 
+dump            dataset all custom 100 airebo.data x y z type q c_e0 fx fy fz 
 dump_modify     dataset sort id append yes
 reset_timestep  0
 
 # ---
 
 fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
-run 			10000
+run 			50000
 unfix			rlx
+
+# ---
+
+write_data      restart.data
 
 

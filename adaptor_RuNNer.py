@@ -84,17 +84,17 @@ class RunnerAdaptor:
             # loop over samples
             for sample in self.dataset.samples:
                 out_file.write("begin\n")
-                out_file.write("lattice %f %f %f\n" % (sample.collective.box[0]*unit['length'], 0.0, 0.0))
-                out_file.write("lattice %f %f %f\n" % (0.0, sample.collective.box[1]*unit['length'], 0.0))
-                out_file.write("lattice %f %f %f\n" % (0.0, 0.0, sample.collective.box[2]*unit['length']))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (sample.collective.box[0]*unit['length'], 0.0, 0.0))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, sample.collective.box[1]*unit['length'], 0.0))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, 0.0, sample.collective.box[2]*unit['length']))
                 # loop over atoms in a sample
                 for atom in sample.atomic:
                     out_file.write("atom ")
-                    out_file.write("%f %f %f " % tuple([pos*unit['length'] for pos in atom.position]))
-                    out_file.write("%s %f %f " % (atom.symbol, atom.charge*unit['charge'], atom.energy*0.0))
-                    out_file.write("%f %f %f\n" % tuple([frc*unit['force'] for frc in atom.force]))
-                out_file.write("energy %f\n" % (sample.collective.total_energy*unit['energy']))
-                out_file.write("charge %f\n" % (sample.collective.total_charge*unit['charge']))
+                    out_file.write("%15.10f %15.10f %15.10f " % tuple([pos*unit['length'] for pos in atom.position]))
+                    out_file.write("%s %15.10f %15.10f " % (atom.symbol, atom.charge*unit['charge'], atom.energy*0.0))
+                    out_file.write("%15.10f %15.10f %15.10f\n" % tuple([frc*unit['force'] for frc in atom.force]))
+                out_file.write("energy %.10f\n" % (sample.collective.total_energy*unit['energy']))
+                out_file.write("charge %.10f\n" % (sample.collective.total_charge*unit['charge']))
                 out_file.write("end\n")
         return self
 
@@ -155,7 +155,16 @@ class RuNNerAdaptorLAMMPS(RunnerAdaptor):
 
 if __name__ == "__main__":
 
-    data = RuNNerAdaptorLAMMPS().read_lammps("dump.airebo.data", {'1': 'O'})
-    print ("number of samples:", data.dataset.number_of_samples)
-    print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
-    data.write_runner("input.data", {'energy': EV_TO_HARTREE, 'length': ANGSTROM_TO_BOHR, 'charge': 1.0})
+    import os
+
+    for filename in ['airebo.data', 'eval.airebo.data']:
+
+        assert ".data" in filename
+
+        runner_filename = ''.join(filename.split('.')[:-1]) + '.input.' + filename.split('.')[-1]
+        print ("wrote to %s" % runner_filename)
+
+        data = RuNNerAdaptorLAMMPS().read_lammps(filename, {'1': 'C'})
+        print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
+        print ("number of samples:", data.dataset.number_of_samples)
+        data.write_runner(runner_filename, {'energy': EV_TO_HARTREE, 'length': ANGSTROM_TO_BOHR, 'charge': 1.0})
