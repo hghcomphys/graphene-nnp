@@ -68,7 +68,7 @@ reset_timestep  0
 # ---
 
 fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
-run 			50000
+run 			10000
 unfix			rlx
 
 # ---
