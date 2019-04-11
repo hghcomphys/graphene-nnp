@@ -64,6 +64,21 @@ class DataSet:
         return len(self.samples)
 
 
+class UnitConversion:
+    """A class for unit conversion of RuNNer package."""
+
+    def __init__(self, energy_conversion=1.0, length_conversion=1.0):
+        self.energy = energy_conversion
+        self.length = length_conversion
+        self.charge = 1.0
+        self.force = energy_conversion / length_conversion
+
+    @property
+    def inverse(self):
+        """A method that applies inverse unit conversion."""
+        return UnitConversion(1.0/self.energy, 1.0/self.length)
+
+
 class RunnerAdaptor:
     """A bas class for conversion file formats of RuNNer package."""
 
@@ -74,29 +89,27 @@ class RunnerAdaptor:
         """Read RuNNer data format."""
         pass
 
-    def write_runner(self, filename, unit={'energy': 1.0, 'length': 1.0, 'charge': 1.0}):
+    def write_runner(self, filename, uc=UnitConversion()):
         """Write RuNNer input data."""
-
-        # convert compatible units for RuNNer package
-        unit['force'] = unit['energy'] / unit['length']
 
         with open(filename, "w") as out_file:
             # loop over samples
             for sample in self.dataset.samples:
                 out_file.write("begin\n")
-                out_file.write("lattice %.10f %.10f %.10f\n" % (sample.collective.box[0]*unit['length'], 0.0, 0.0))
-                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, sample.collective.box[1]*unit['length'], 0.0))
-                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, 0.0, sample.collective.box[2]*unit['length']))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (sample.collective.box[0]*uc.length, 0.0, 0.0))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, sample.collective.box[1]*uc.length, 0.0))
+                out_file.write("lattice %.10f %.10f %.10f\n" % (0.0, 0.0, sample.collective.box[2]*uc.length))
                 # loop over atoms in a sample
                 for atom in sample.atomic:
                     out_file.write("atom ")
-                    out_file.write("%15.10f %15.10f %15.10f " % tuple([pos*unit['length'] for pos in atom.position]))
-                    out_file.write("%s %15.10f %15.10f " % (atom.symbol, atom.charge*unit['charge'], atom.energy*0.0))
-                    out_file.write("%15.10f %15.10f %15.10f\n" % tuple([frc*unit['force'] for frc in atom.force]))
-                out_file.write("energy %.10f\n" % (sample.collective.total_energy*unit['energy']))
-                out_file.write("charge %.10f\n" % (sample.collective.total_charge*unit['charge']))
+                    out_file.write("%15.10f %15.10f %15.10f " % tuple([pos*uc.length for pos in atom.position]))
+                    out_file.write("%s %15.10f %15.10f " % (atom.symbol, atom.charge*uc.charge, atom.energy*0.0))
+                    out_file.write("%15.10f %15.10f %15.10f\n" % tuple([frc*uc.force for frc in atom.force]))
+                out_file.write("energy %.10f\n" % (sample.collective.total_energy*uc.energy))
+                out_file.write("charge %.10f\n" % (sample.collective.total_charge*uc.charge))
                 out_file.write("end\n")
         return self
+
 
 class RuNNerAdaptorLAMMPS(RunnerAdaptor):
     """An inherited class for conversion file formats between RuNNer and LAMMPS packages."""
@@ -155,16 +168,17 @@ class RuNNerAdaptorLAMMPS(RunnerAdaptor):
 
 if __name__ == "__main__":
 
-    import os
+    # convert compatible units for RuNNer package
+    uc = UnitConversion(energy_conversion=EV_TO_HARTREE, length_conversion=ANGSTROM_TO_BOHR)
 
     for filename in ['airebo.data', 'eval.airebo.data']:
 
         assert ".data" in filename
 
-        runner_filename = ''.join(filename.split('.')[:-1]) + '.input.' + filename.split('.')[-1]
+        runner_filename = filename[:-4] + 'input.data'
         print ("wrote to %s" % runner_filename)
 
         data = RuNNerAdaptorLAMMPS().read_lammps(filename, {'1': 'C'})
         print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
         print ("number of samples:", data.dataset.number_of_samples)
-        data.write_runner(runner_filename, {'energy': EV_TO_HARTREE, 'length': ANGSTROM_TO_BOHR, 'charge': 1.0})
+        data.write_runner("RuNNer/" + runner_filename, uc)
