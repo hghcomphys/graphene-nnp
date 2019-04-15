@@ -85,9 +85,8 @@ class RunnerAdaptor:
     def __init__(self):
         self.dataset = DataSet()
 
-    def read_runner(self, filename):
-        """Read RuNNer data format."""
-        pass
+    def clean(self):
+        self.dataset = DataSet()
 
     def write_runner(self, filename, uc=UnitConversion()):
         """Write RuNNer input data."""
@@ -109,6 +108,27 @@ class RunnerAdaptor:
                 out_file.write("charge %.10f\n" % (sample.collective.total_charge*uc.charge))
                 out_file.write("end\n")
         return self
+
+    def read_nnforces(self, filename, uc=UnitConversion()):
+        """A method that reads predicted force for a given structure"""
+        nnforces = []
+        with open(filename, 'r') as infile:
+            for line in infile:
+                if "NNforces" in line:
+                    line = line.rstrip("/n").split()
+                    nnforces.append([float(_) for _ in line[2:5]])
+        return nnforces
+
+    def read_nnenergy(self, filename, uc=UnitConversion()):
+        """A method that reads predicted force for a given structure"""
+        nnenergy = None
+        with open(filename, 'r') as infile:
+            for line in infile:
+                if "NNenergy" in line:
+                    line = line.rstrip("/n").split()
+                    nnenergy = float(line[1])
+                    break
+        return nnenergy
 
 
 class RuNNerAdaptorLAMMPS(RunnerAdaptor):
@@ -171,10 +191,10 @@ if __name__ == "__main__":
     # convert compatible units for RuNNer package
     uc = UnitConversion(energy_conversion=EV_TO_HARTREE, length_conversion=ANGSTROM_TO_BOHR)
 
+    # Convert lammps dataset into RuNNer input data format
     for filename in ['airebo.data', 'eval.airebo.data']:
 
         assert ".data" in filename
-
         runner_filename = filename[:-4] + 'input.data'
         print ("wrote to %s" % runner_filename)
 
@@ -182,3 +202,7 @@ if __name__ == "__main__":
         print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
         print ("number of samples:", data.dataset.number_of_samples)
         data.write_runner("RuNNer/" + runner_filename, uc)
+
+    # Read predicted force
+    # nnenergy = RunnerAdaptor().read_nnenergy("RuNNer/mode3.out")
+    # print(nnenergy)
