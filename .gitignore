@@ -1,6 +1,7 @@
-RuNNer/
+nnp-data/
 .idea
 *.xyz
 *.data
 log.lammps
 graphene_gen.f90
+*.out
