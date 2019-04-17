@@ -5,3 +5,4 @@ nnp-data/
 log.lammps
 graphene_gen.f90
 *.out
+__*__
