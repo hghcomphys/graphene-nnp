@@ -52,7 +52,7 @@ timestep 		0.001
 thermo          1
 thermo_style    custom step temp etotal pe lx ly
 
-dump           1 mov xyz 10 dump.xyz
+dump           1 mov xyz 1 dump.xyz
 dump_modify    1 sort id
 
 ############################## 
@@ -63,7 +63,7 @@ variable T      equal 600
 # ---
 
 compute         e0 all pe/atom
-dump            dataset all custom 1 nnp.data x y z type q c_e0 fx fy fz
+dump            dataset all custom 1 nnp.data id x y z type q c_e0 fx fy fz
 dump_modify     dataset sort id append yes
 reset_timestep  0
 
@@ -75,4 +75,4 @@ unfix			rlx
 
 # ---
 
-write_data      restart.data
+#write_data      restart.data

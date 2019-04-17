@@ -6,7 +6,8 @@ EV_TO_HARTREE = 0.0367493
 class AtomicData:
     """A class that holds atomic data such as positions, forces, total_energy, charges, etc."""
 
-    def __init__(self, position=(0.0, 0.0, 0.0), symbol='X', charge=0.0, energy=0.0, force=(0.0, 0.0, 0.0)):
+    def __init__(self, atomid=0, position=(0.0, 0.0, 0.0), symbol='X', charge=0.0, energy=0.0, force=(0.0, 0.0, 0.0)):
+        self.atomid = atomid
         self.position= position
         self.symbol = symbol
         self.charge = charge
@@ -169,17 +170,18 @@ class RuNNerAdaptorLAMMPS(RunnerAdaptor):
                 line = next(in_file)
                 for n in range(number_of_atoms):
                     line = next(in_file).rstrip("/n").split()
-                    position = (float(line[0]), float(line[1]), float(line[2]))
-                    symbol = line[3]
-                    charge = float(line[4])
-                    energy = float(line[5])
-                    force = (float(line[6]), float(line[7]), float(line[8]))
+                    atomid = int(line[0])
+                    position = (float(line[1]), float(line[2]), float(line[3]))
+                    symbol = line[4]
+                    charge = float(line[5])
+                    energy = float(line[6])
+                    force = (float(line[7]), float(line[8]), float(line[9]))
                     # convert number to an atomic symbol
                     if symbol_dict is not None:
                         symbol = symbol_dict[symbol]
 
                     # create atomic data and append it to sample
-                    sample.atomic.append(AtomicData(position, symbol, charge, energy, force))
+                    sample.atomic.append(AtomicData(atomid, position, symbol, charge, energy, force))
 
                 # set collective data
                 sample.collective = CollectiveData(tuple(box), sample.total_energy, sample.total_charge)

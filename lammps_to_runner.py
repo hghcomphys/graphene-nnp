@@ -14,7 +14,7 @@ lammps_filename = args[1]  # 'airebo.data'
 runner_filename = args[2]  # 'airebo.input.data'
 
 data = RuNNerAdaptorLAMMPS().read_lammps(lammps_filename, {'1': 'C'})
-print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
+#print ("number of atoms in each sample:", data.dataset.samples[0].number_of_atoms)
 print ("number of samples:", data.dataset.number_of_samples)
 data.write_runner(runner_filename, uc)
 
