@@ -1,0 +1,48 @@
+# MD Run Graphene&CarbonNanotube
+
+dimension	3
+boundary	p p p
+
+units       metal
+atom_style	full
+
+read_data restart.data 
+ 
+##############################
+
+pair_style airebo 3.0
+pair_coeff * * CH.airebo C
+
+#neighbor 2.0 nsq
+neigh_modify every 1 delay 0 check no
+
+############################## 
+
+thermo          1
+thermo_style    custom step temp etotal pe lx ly
+
+dump           1 all xyz 1 dump.xyz
+dump_modify    1 sort id
+
+##############################
+
+compute         e0 all pe/atom
+
+# ---
+
+variable a loop 100
+label loop
+
+dump            dataset all custom 1 airebo.data id x y z type q c_e0 fx fy fz 
+dump_modify     dataset sort id append yes
+#reset_timestep  0
+
+read_dump nnp.data 1 x y z q box yes replace yes #type q c_e0 fx fy fz  # dump file must include atom id
+
+run 0  # rerun command does not read atom charge!
+undump dataset
+
+next a
+jump rerun.airebo.in loop
+
+
