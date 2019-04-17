@@ -9,7 +9,7 @@
 variable cfgFile         string "lmp/restart.data"
 
 # Timesteps
-variable numSteps        equal  1000
+variable numSteps        equal  10000
 variable dt              equal  0.0005
 
 # NN
@@ -26,13 +26,13 @@ units metal
 boundary p p p
 atom_style full
 read_data ${cfgFile}
+replicate 3 3 1
 mass 1 ${mass_C}
-timestep ${dt}
 
 ###############################################################################
 # NN
 ###############################################################################
-pair_style nnp dir ${nnpDir} showew no showewsum 10 resetew yes maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
+pair_style nnp dir ${nnpDir} showew no showewsum 0 resetew yes maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
 pair_coeff * * ${nnpCutoff}
 
 ##############################
@@ -48,18 +48,19 @@ group mov union Grn
 
 ##############################
 
-timestep 		0.0005
-thermo          1
+timestep 		${dt}
+thermo          100
 thermo_style    custom step temp etotal pe lx ly
 
-dump           1 mov xyz 1 lmp/dump.xyz
+dump           1 mov xyz 100 lmp/dump.xyz
 dump_modify    1 sort id
 
 ############################## 
 
 variable T      equal 600 
-velocity   		mov create 1 98445 dist gaussian mom yes rot yes
+#velocity   	mov create 1 98445 dist gaussian mom yes rot yes
 
+# ---
 
 fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
 run 			${numSteps}

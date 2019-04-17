@@ -27,12 +27,11 @@ boundary p p p
 atom_style full
 read_data ${cfgFile}
 mass 1 ${mass_C}
-timestep ${dt}
 
 ###############################################################################
 # NN
 ###############################################################################
-pair_style nnp dir ${nnpDir} showew no showewsum 10 resetew no maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
+pair_style nnp dir ${nnpDir} showew no showewsum 10 resetew yes maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
 pair_coeff * * ${nnpCutoff}
 
 ##############################
@@ -48,12 +47,12 @@ group mov union Grn
 
 ##############################
 
-timestep 		0.001
+timestep        ${dt}
 thermo          1
 thermo_style    custom step temp etotal pe lx ly
 
-dump           1 mov xyz 1 lmp/dump.xyz
-dump_modify    1 sort id
+dump            1 mov xyz 1 lmp/dump.xyz
+dump_modify     1 sort id
 
 ############################## 
 
@@ -75,4 +74,4 @@ unfix			rlx
 
 # ---
 
-#write_data      restart.data
+write_data      lmp/restart.data  # in each loop step, the NNP-MD starts from a new configuration

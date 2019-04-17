@@ -1,7 +1,7 @@
 """A simple adaptor for RuNNer io file formats"""
 
-ANGSTROM_TO_BOHR = 1.88973
-EV_TO_HARTREE = 0.0367493
+ANGSTROM_TO_BOHR = 1.8897261328
+EV_TO_HARTREE = 0.0367493254
 
 class AtomicData:
     """A class that holds atomic data such as positions, forces, total_energy, charges, etc."""
