@@ -11,14 +11,14 @@ cp airebo.data airebo0.data
 #cp airebo0.data airebo.data
 
 
-for i in $(seq 1 1 3)
+for i in $(seq 1 1 1)
 do
 	echo "Extending dataset... (step $i)"
 
 	python lammps_to_runner.py airebo.data input.data
 
 	echo "Using RuNNer..."
-	cd nnp-data
+	cd nnp
 	rm -f *.out *.data
 	mv ../input.data .
 	sh runscript.sh | tee runscript.out

@@ -32,7 +32,7 @@ timestep ${dt}
 ###############################################################################
 # NN
 ###############################################################################
-pair_style nnp dir ${nnpDir} showew no showewsum 10 resetew no maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
+pair_style nnp dir ${nnpDir} showew no showewsum 10 resetew yes maxew 1000 cflength 1.8897261328 cfenergy 0.0367493254
 pair_coeff * * ${nnpCutoff}
 
 ##############################
@@ -49,10 +49,10 @@ group mov union Grn
 ##############################
 
 timestep 		0.001
-thermo          10
+thermo          1
 thermo_style    custom step temp etotal pe lx ly
 
-dump           1 mov xyz 10 dump.xyz
+dump           1 mov xyz 1 dump.xyz
 dump_modify    1 sort id
 
 ############################## 

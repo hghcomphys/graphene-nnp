@@ -14,7 +14,7 @@ variable dt              equal  0.0005
 
 # NN
 variable nnpCutoff       equal  6.36
-variable nnpDir          string "nnp-data"
+variable nnpDir          string "nnp"
 
 # Masses
 variable mass_C          equal  12.010700  # C

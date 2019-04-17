@@ -37,7 +37,7 @@ dump            dataset all custom 1 airebo.data id x y z type q c_e0 fx fy fz
 dump_modify     dataset sort id append yes
 #reset_timestep  0
 
-read_dump nnp.data 1 x y z q box yes replace yes #type q c_e0 fx fy fz  # dump file must include atom id
+read_dump nnp.data 1 x y z q wrapped no #type q c_e0 fx fy fz  # dump file must include atom id
 
 run 0  # rerun command does not read atom charge!
 undump dataset
