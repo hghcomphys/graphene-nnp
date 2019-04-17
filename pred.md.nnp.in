@@ -6,7 +6,7 @@
 # VARIABLES
 ###############################################################################
 # Configuration files
-variable cfgFile         string "restart.data"
+variable cfgFile         string "lmp/restart.data"
 
 # Timesteps
 variable numSteps        equal  1000
@@ -14,7 +14,7 @@ variable dt              equal  0.0005
 
 # NN
 variable nnpCutoff       equal  6.36
-variable nnpDir          string "nnp-data"
+variable nnpDir          string "nnp"
 
 # Masses
 variable mass_C          equal  12.010700  # C
@@ -48,26 +48,18 @@ group mov union Grn
 
 ##############################
 
-timestep 		0.001
+timestep 		0.0005
 thermo          1
 thermo_style    custom step temp etotal pe lx ly
 
-dump           1 mov xyz 1 dump.xyz
+dump           1 mov xyz 1 lmp/dump.xyz
 dump_modify    1 sort id
 
 ############################## 
 
 variable T      equal 600 
-#velocity   		mov create 1 98445 dist gaussian mom yes rot yes
+velocity   		mov create 1 98445 dist gaussian mom yes rot yes
 
-# ---
-
-#compute         e0 all pe/atom
-#dump            dataset all custom 1 nnp.data id x y z type q c_e0 fx fy fz
-#dump_modify     dataset sort id append yes
-#reset_timestep  0
-
-# ---
 
 fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
 run 			${numSteps}

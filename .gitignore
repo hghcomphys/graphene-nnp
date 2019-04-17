@@ -1,4 +1,5 @@
-nnp/
+nnp/*
+lmp/*
 .idea
 *.xyz
 *.data
