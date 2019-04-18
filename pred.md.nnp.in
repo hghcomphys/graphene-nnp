@@ -6,10 +6,10 @@
 # VARIABLES
 ###############################################################################
 # Configuration files
-variable cfgFile         string "lmp/restart.data"
+variable cfgFile         string "lmp/restart0.data"
 
 # Timesteps
-variable numSteps        equal  10000
+variable numSteps        equal  1000
 variable dt              equal  0.0005
 
 # NN
@@ -48,22 +48,25 @@ group mov union Grn
 
 ##############################
 
+variable        peratom_en equal etotal/count(all)
+
 timestep 		${dt}
 thermo          100
-thermo_style    custom step temp etotal pe lx ly
+thermo_style    custom step temp etotal pe v_peratom_en lx ly
 
 dump           1 mov xyz 100 lmp/dump.xyz
 dump_modify    1 sort id
 
 ############################## 
 
-variable T      equal 600 
-#velocity   	mov create 1 98445 dist gaussian mom yes rot yes
+variable T      equal 300
+variable P      equal 0
+velocity        mov create $T 98445 dist gaussian mom yes rot yes
 
 # ---
 
-fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
-run 			${numSteps}
+fix        		rlx mov npt temp $T $T 0.1 x $P $P 1.0 y $P $P 1.0 couple xy
+run 			1000
 unfix			rlx
 
 # ---

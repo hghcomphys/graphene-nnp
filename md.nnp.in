@@ -56,7 +56,8 @@ dump_modify     1 sort id
 
 ############################## 
 
-variable T      equal 600 
+variable T      equal 600
+variable P      equal -1000
 #velocity   	mov create 1 98445 dist gaussian mom yes rot yes
 
 # ---
@@ -68,7 +69,7 @@ reset_timestep  0
 
 # ---
 
-fix        		rlx mov npt temp $T $T 0.1 x 0 0 1.0 y 0 0 1.0 couple xy
+fix        		rlx mov npt temp 1 $T 0.1 x 0 $P 1.0 y 0 $P 1.0 couple xy
 run 			${numSteps}
 unfix			rlx
 

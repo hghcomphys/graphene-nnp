@@ -3,20 +3,24 @@
 clear
 echo
 echo "Graphene-NNP"
-echo "-----------------------------"
+echo "============================="
 
-echo "Generating initial dataset..."
-rm -f lmp/*.out lmp/*.data
-lmp_serial < md.airebo.in > lmp/md.airebo.out
-cp lmp/airebo.data lmp/airebo0.data
-python lammps_to_runner.py lmp/airebo.data lmp/input.data
+if [-z "$1"]
+  then
+   echo "Generating initial dataset..."
+    rm -f lmp/*.out lmp/*.data
+    lmp_serial < md.airebo.in > lmp/md.airebo.out
+    cp lmp/airebo.data lmp/airebo0.data
+    cp lmp/restart.data lmp/restart0.data
+    python lammps_to_runner.py lmp/airebo.data lmp/input.data
 
-echo "RuNNer..."
-cd nnp
-rm -f *.out *.data
-mv ../lmp/input.data .
-sh runscript.sh > runscript.out
-cd ..
+    echo "RuNNer..."
+    cd nnp
+    rm -f *.out *.data
+    mv ../lmp/input.data .
+    sh runscript.sh > runscript.out
+    cd ..
+fi
 
 for i in $(seq 1 1 2)
 do
