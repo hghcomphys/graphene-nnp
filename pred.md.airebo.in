@@ -1,0 +1,53 @@
+# MD Run Graphene&CarbonNanotube
+
+dimension	3
+boundary	p p p
+
+units       metal
+atom_style	full
+
+read_data lmp/restart0.data
+replicate 3 3 1
+
+group carbon type 1
+group Grn union carbon
+group mov union Grn
+ 
+##############################
+
+pair_style airebo 3.0
+pair_coeff * * CH.airebo C
+
+#neighbor 2.0 nsq
+neigh_modify every 1 delay 0 check no
+
+##############################
+
+variable        peratom_en equal etotal/count(all)
+
+timestep 		0.0005
+thermo          100
+thermo_style    custom step temp etotal pe v_peratom_en lx ly
+
+dump           1 mov xyz 100 lmp/dump.xyz
+dump_modify    1 sort id
+
+
+############################## 
+
+variable T      equal 300
+variable P      equal 0
+velocity        mov create $T 98445 dist gaussian mom yes rot yes
+
+# ---
+
+fix        		rlx mov npt temp $T $T 0.1 x $P $P 1.0 y $P $P 1.0 couple xy
+run 			1000
+unfix			rlx
+
+# ---
+
+#write_data      restart.data
+
+
+
