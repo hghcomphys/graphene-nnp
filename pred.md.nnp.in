@@ -26,7 +26,7 @@ units metal
 boundary p p p
 atom_style full
 read_data ${cfgFile}
-replicate 3 3 1
+replicate 2 2 1
 mass 1 ${mass_C}
 
 ###############################################################################
@@ -48,25 +48,39 @@ group mov union Grn
 
 ##############################
 
-variable        peratom_en equal etotal/count(all)
+variable    natom equal count(all)
+
+variable    peratom_en equal etotal/v_natom
+
+compute     peratom all property/atom z
+variable    peratom_z  atom c_peratom/v_natom
+variable    peratom_z2 atom c_peratom^2/v_natom
+compute     z  all reduce sum v_peratom_z
+compute     z2 all reduce sum v_peratom_z2
+variable    h2 equal c_z2-c_z^2
+
+variable    temp equal temp
+fix         ave all ave/time 1 10 1000 v_temp v_peratom_en v_h2 file results/param-nnp.dat
+
+##############################
 
 timestep 		${dt}
 thermo          100
-thermo_style    custom step temp etotal pe v_peratom_en lx ly
+thermo_style    custom step temp etotal pe v_peratom_en lx ly v_h2
 
-dump           1 mov xyz 100 lmp/dump.xyz
+dump           1 mov xyz 100 results/dump-nnp.xyz
 dump_modify    1 sort id
 
 ############################## 
 
-variable T      equal 300
+variable T      equal 600
 variable P      equal 0
-velocity        mov create $T 98445 dist gaussian mom yes rot yes
+velocity        mov create 1 98445 dist gaussian mom yes rot yes
 
 # ---
 
-fix        		rlx mov npt temp $T $T 0.1 x $P $P 1.0 y $P $P 1.0 couple xy
-run 			1000
+fix        		rlx mov npt temp 1 $T 0.1 x $P $P 1.0 y $P $P 1.0 couple xy
+run 			20000
 unfix			rlx
 
 # ---
