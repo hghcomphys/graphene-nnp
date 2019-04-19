@@ -40,14 +40,14 @@ This procedure constantly increases the size of dataset in order to effectively 
 
 All the steps can automatically apply by running `train_nnp.sh`.
 
-## Results (primary):
-Comparison between the trained NNP and AIREBO potentials (for a supercell of 2x2x1):
+## Evaluating NNP:
+Primary comparison between the trained NNP and the AIREBO potentials for a supercell of size of 2x2x1 (448 atoms) are found as follows:
 - Radial distribution functions
 <p align="center">
-  <img src="results/rdf.png"{ width=50% }>
+  <img src="results/rdf.png"{ width=40% }>
 </p>
 
 - Energy per atom as function of temperature
 <p align="center">
-  <img src="results/eng.png"{ width=50% }>
+  <img src="results/eng.png"{ width=40% }>
 </p>  
