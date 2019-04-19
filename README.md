@@ -31,7 +31,7 @@ lmp_serial < md.nnp.in > lmp/md.nnp.out
 
 5. The `rerun.airebo.in` reads `nnp.data` structure file and performs single point calculation for each snapshot (configuration) obtained from previous step including energy, forces, charges, etc.
 
-6. The otained data in previous step is appended to the 'airebo.data' and repeat it from **step 2**.
+6. The otained data in previous step is appended to the `airebo.data` and repeating from the **step 2**.
 ```
 lmp_serial < rerun.airebo.in > lmp/rerun.airebo.out
 ```
