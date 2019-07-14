@@ -6,3 +6,7 @@ log.lammps
 graphene_gen.f90
 *.out
 __*__
+vasp/
+nnp/
+results/
+*.zip
